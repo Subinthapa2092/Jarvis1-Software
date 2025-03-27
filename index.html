@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JARVIS - Subin's Virtual Assistant</title>
+    <link rel="shortcut icon" href="avatar.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@100;200;300;400;500;600;700&display=swap");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Roboto Mono", monospace;
+        }
+
+        .main {
+            min-height: 100vh;
+            position: relative;
+            width: 100%;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #000000 0%, #0a0a2a 100%);
+            overflow: hidden;
+        }
+
+        .main::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 L0,100 Z" fill="none" stroke="%230066ff" stroke-width="0.5" stroke-dasharray="5,5"/></svg>');
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .main .image-container {
+            padding: 10px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .main .image-container .image {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 1000px;
+        }
+
+        .main .image-container .image img {
+            width: 350px;
+            align-items: center;
+            animation: rotate 20s infinite linear;
+            filter: drop-shadow(0 0 15px #0066ff);
+            transition: all 0.3s ease;
+        }
+
+        .main .image-container .image img:hover {
+            filter: drop-shadow(0 0 25px #0066ff);
+        }
+
+        @keyframes rotate {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(360deg); }
+        }
+
+        .main .image-container h1 {
+            color: #0066ff;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 40px;
+            text-shadow: 0 0 10px rgba(0, 102, 255, 0.5);
+            letter-spacing: 3px;
+        }
+
+        .main .image-container p {
+            color: #4d7cff;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 18px;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        .main .input {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40vw;
+            height: 50px;
+            border-radius: 20px;
+            background: rgba(0, 51, 153, 0.3);
+            border: 1px solid #0066ff;
+            box-shadow: 0 0 15px rgba(0, 102, 255, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .main .input:hover {
+            box-shadow: 0 0 25px rgba(0, 102, 255, 0.5);
+        }
+
+        .main .input .talk {
+            background: transparent;
+            outline: none;
+            border: none;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 15px;
+            cursor: pointer;
+            color: #0066ff;
+            transition: all 0.3s ease;
+        }
+
+        .main .input .talk:hover {
+            transform: scale(1.1);
+        }
+
+        .main .input .talk i {
+            font-size: 20px;
+            color: #0066ff;
+            text-shadow: 0 0 5px rgba(0, 102, 255, 0.5);
+        }
+
+        .main .input .content {
+            color: #4d7cff;
+            font-size: 15px;
+            margin-right: 20px;
+        }
+
+        .bio-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 100;
+            overflow-y: auto;
+            padding: 20px;
+            color: #fff;
+        }
+
+        .bio-content {
+            max-width: 800px;
+            margin: 50px auto;
+            background: rgba(0, 20, 40, 0.8);
+            padding: 30px;
+            border-radius: 10px;
+            border: 1px solid #0066ff;
+            box-shadow: 0 0 20px rgba(0, 102, 255, 0.5);
+        }
+
+        .bio-content h2 {
+            color: #0066ff;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+
+        .bio-content h3 {
+            color: #4d7cff;
+            margin: 20px 0 10px;
+            font-size: 22px;
+        }
+
+        .bio-content p, .bio-content ul {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: #a8c0ff;
+        }
+
+        .bio-content ul {
+            padding-left: 20px;
+        }
+
+        .bio-content li {
+            margin-bottom: 8px;
+        }
+
+        .close-bio {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #ff3333;
+            font-size: 30px;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+        }
+
+        .signature {
+            text-align: right;
+            font-style: italic;
+            color: #0066ff;
+            margin-top: 30px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <section class="main">
+        <div class="image-container">
+            <div class="image">
+                <img src="https://i.gifer.com/7Q6X.gif" alt="JARVIS 3D Animation">
+            </div>
+            <h1>J A R V I S</h1>
+            <p>Hello, I'm Subin Thapa's personal AI assistant. How may I help you today?</p>
+        </div>
+        <div class="input">
+            <button class="talk"><i class="fas fa-microphone-alt"></i></button>
+            <h1 class="content">Click here to speak</h1>
+        </div>
+    </section>
+
+    <div class="bio-container" id="bioContainer">
+        <button class="close-bio" onclick="closeBio()">&times;</button>
+        <div class="bio-content">
+            <h2>SUBIN THAPA - The Visionary Developer</h2>
+            
+            <h3>1. Educational Journey</h3>
+            <p>Subin Thapa is an 18-year-old ambitious student currently studying in Class 12 Science and preparing for pre-board exams while also gearing up for the final board exams that are coming soon. Despite facing numerous challenges in life, he remains highly determined, hardworking, and disciplined in his journey toward success.</p>
+            
+            <h3>2. Trading and Stock Market Journey</h3>
+            <p>While preparing for his exams, Subin is also learning and practicing stock market trading in the Nepal Stock Exchange (NEPSE). His dream is to become a pro trader within 1-2 years and use data science and technical analysis to make profitable trades.</p>
+            
+            <h3>3. Data Science & Python Programming Journey</h3>
+            <p>Alongside his studies and trading, Subin has a passion for data science and Python programming. He has created an 8-month roadmap to master data science and is following it strictly.</p>
+            
+            <h3>4. Financial Journey & Wealth-Building Plan</h3>
+            <p>Coming from a poor Nepalese family with uneducated farmer parents, Subin has a strong desire to achieve financial freedom and build a luxurious life. Despite financial struggles, he has already earned Rs 8 lakh+ in 4 years by investing in IPOs.</p>
+            
+            <h3>5. Life Challenges & Personal Growth</h3>
+            <p>Subin has faced many struggles in life, including financial difficulties and living at his uncle's house in Kathmandu. Despite the challenges, he has remained focused on his dreams.</p>
+            
+            <h3>6. Future Plans & Aspirations</h3>
+            <ul>
+                <li>Building an IT Business</li>
+                <li>Becoming a Millionaire & Beyond</li>
+                <li>Creating a Blog Website</li>
+                <li>Buying a Luxurious House in Kathmandu</li>
+                <li>Becoming a Global Trader & Investor</li>
+            </ul>
+            
+            <p class="signature">"Mark my words, one day, the world will know the name—SUBIN THAPA!"</p>
+        </div>
+    </div>
+
+    <script>
+        const btn = document.querySelector('.talk');
+        const content = document.querySelector('.content');
+        const bioContainer = document.getElementById('bioContainer');
+
+        function speak(text) {
+            const text_speak = new SpeechSynthesisUtterance(text);
+            text_speak.rate = 1;
+            text_speak.volume = 1;
+            text_speak.pitch = 1;
+            window.speechSynthesis.speak(text_speak);
+        }
+
+        function wishMe() {
+            var day = new Date();
+            var hour = day.getHours();
+            if (hour >= 0 && hour < 12) {
+                speak("Good Morning Boss Subin... Ready for another productive day?");
+            } else if (hour >= 12 && hour < 17) {
+                speak("Good Afternoon Master Subin... How are your studies going?");
+            } else {
+                speak("Good Evening Sir Subin... Time to review today's progress");
+            }
+        }
+
+        function showBio() {
+            bioContainer.style.display = "block";
+            speak("Displaying information about my creator, Subin Thapa. The visionary developer behind this JARVIS system.");
+        }
+
+        function closeBio() {
+            bioContainer.style.display = "none";
+        }
+
+        window.addEventListener('load', () => {
+            speak("Initializing JARVIS... System developed by Subin Thapa");
+            wishMe();
+        });
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+
+        recognition.onresult = (event) => {
+            const currentIndex = event.resultIndex;
+            const transcript = event.results[currentIndex][0].transcript;
+            content.textContent = transcript;
+            takeCommand(transcript.toLowerCase());
+        };
+
+        btn.addEventListener('click', () => {
+            content.textContent = "Listening...";
+            recognition.start();
+        });
+
+        function takeCommand(message) {
+            if (message.includes('hey') || message.includes('hello')) {
+                speak("Hello Sir Subin, How May I Help You?");
+            } 
+            else if (message.includes('who made you') || message.includes('who created you') || 
+                   message.includes('who developed you') || message.includes('who is your developer')) {
+                speak("I was created by Subin Thapa, an ambitious 18-year-old developer, trader, and future millionaire from Nepal. Would you like to know more about him?");
+                setTimeout(() => {
+                    showBio();
+                }, 2000);
+            }
+            else if (message.includes('tell me about subin') || message.includes('subin thapa') || 
+                   message.includes('who is subin') || message.includes('about developer')) {
+                showBio();
+            }
+            else if (message.includes("open google")) {
+                window.open("https://google.com", "_blank");
+                speak("Opening Google...");
+            } 
+            else if (message.includes("open youtube")) {
+                window.open("https://youtube.com", "_blank");
+                speak("Opening Youtube...");
+            } 
+            else if (message.includes("open facebook")) {
+                window.open("https://facebook.com", "_blank");
+                speak("Opening Facebook...");
+            } 
+            else if (message.includes('time')) {
+                const time = new Date().toLocaleString(undefined, { hour: "numeric", minute: "numeric" });
+                speak("The current time is " + time);
+            } 
+            else if (message.includes('date')) {
+                const date = new Date().toLocaleString(undefined, { month: "short", day: "numeric" });
+                speak("Today's date is " + date);
+            } 
+            else if (message.includes('calculator')) {
+                window.open('Calculator:///');
+                speak("Opening Calculator");
+            } 
+            else {
+                window.open(`https://www.google.com/search?q=${message.replace(" ", "+")}`, "_blank");
+                speak("I found some information for " + message + " on Google");
+            }
+        }
+    </script>
+</body>
+</html>
